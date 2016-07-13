@@ -10,13 +10,12 @@ namespace ConsoleApplication1
             {
                 using (UserPrincipal user = UserPrincipal.FindByIdentity(ctx, "test"))
                 {
-                    bool enabledChanged         = ((userAccessControl & 0x2) != 0) == user.Enabled;
-                    bool pwdNeverExpiresChanged = ((userAccessControl & 0x10000) != 0) == user.PasswordNeverExpires;
-                    bool lockedOutChanged       = ((userAccessControl & 0x10) != 0) == user.IsAccountLockedOut();
-                    //bool pwdLastSet = ((userAccessControl & 0x2) != 0) == user.Enabled;
-
-                    if (lockedOutChanged)
-                        user.UnlockAccount();
+                    user
+                    .SetIfPwdMustChange()
+                    .SetIfEnabledChange(userAccessControl)
+                    .SetIfPwdNeverExpiresChange(userAccessControl)
+                    .SetIfLockOutChange(userAccessControl);
+                    user.Save();
                 }
 
             }
