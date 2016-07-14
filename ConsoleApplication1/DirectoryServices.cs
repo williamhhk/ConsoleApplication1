@@ -1,4 +1,7 @@
-﻿using System.DirectoryServices.AccountManagement;
+﻿using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
+using System.DirectoryServices.ActiveDirectory;
+using System.Linq;
 
 namespace ConsoleApplication1
 {
@@ -14,11 +17,16 @@ namespace ConsoleApplication1
                     .SetIfPwdMustChange()
                     .SetIfEnabledChange(userAccessControl)
                     .SetIfPwdNeverExpiresChange(userAccessControl)
-                    .SetIfLockOutChange(userAccessControl);
-                    user.Save();
+                    .SetIfLockOutChange(userAccessControl)
+                    .Save();
                 }
 
             }
+        }
+
+        public IEnumerable<DomainController> GetControllers()
+        {
+            return Domain.GetCurrentDomain().DomainControllers.OfType<DomainController>().Select(controller => controller);
         }
     }
 }
